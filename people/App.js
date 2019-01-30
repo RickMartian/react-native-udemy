@@ -1,27 +1,51 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import Header from "./src/components/Header";
-import axios from "axios";
+import PeoplePage from './src/pages/PeoplePage';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
+import PeopleDetailPage from './src/pages/PeopleDetailPage';
+import { capitalizeFirstLetter } from './src/util';
 
-export default class App extends React.Component {
-  renderList() {
-    const names = ["Steve Vai", "Jimi Handrix", "Chimbinha", "Eddie Van Halen"];
+const stackNavigator = createStackNavigator(
+  {
+    Main: {
+      screen: PeoplePage
+    },
 
-    // const textElements = names.map((name, index) => {
-    //   return <Text key={name}>{name}</Text>;
-    // });
+    PeopleDetail: {
+      screen: PeopleDetailPage,
+      navigationOptions: ({ navigation }) => {
+        const name = capitalizeFirstLetter(navigation.state.params.people.name.first);
 
-    axios.get("https://randomuser.me/api?nat=br&results=5").then(response => {
-      console.log(response.data);
-    });
+        return {
+          title: name,
+          headerTitleStyle: {
+            color: 'white',
+            fontSize: 30
+          }
+        };
+      }
+    }
+  },
+  {
+    initialRouteName: 'Main',
+
+    defaultNavigationOptions: {
+      title: 'People',
+      headerTintColor: 'white',
+      headerStyle: {
+        backgroundColor: '#6ca2f7',
+        borderBottomWidth: 1,
+        borderBottomColor: '#C5C5C5'
+      },
+
+      headerTitleStyle: {
+        color: 'white',
+        fontSize: 30,
+        flexGrow: 1,
+        textAlign: 'center'
+      }
+    }
   }
+);
 
-  render() {
-    return (
-      <View>
-        <Header title="People" />
-        {this.renderList()}
-      </View>
-    );
-  }
-}
+const appContainer = createAppContainer(stackNavigator);
+
+export default appContainer;
